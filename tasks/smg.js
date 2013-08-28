@@ -17,6 +17,7 @@ module.exports = function (grunt) {
         var alreadyLoaded = [];
         var readyString = data.readyStr || 'scriptManifestReady';
         var betweenSteps = '], function() { $script([';
+        var commaNewLine = ', \n';
         var output;
         var endingBracketsCounter = 0;
         if (data.steps) {
@@ -28,8 +29,8 @@ module.exports = function (grunt) {
 
             stepGlobs.forEach(function (globExp) {
                 var files = glob.sync(globExp);
-                grunt.log.writeln(JSON.stringify(files));
-                if (files) {
+                if (files && files.length > 0) {
+                    grunt.log.writeln(JSON.stringify(files));
                     var fileName;
                     while(fileName = files.pop()){
                         if (alreadyLoaded.indexOf(fileName) === -1) {   //ignore it if it is already been loaded
@@ -37,16 +38,16 @@ module.exports = function (grunt) {
                             if (data.relativeTo) {
                                 relativeUrl = relativeUrl.substring(data.relativeTo.length);
                             }
-                            if (files.length == 0) {
-                                output += '"' + relativeUrl + '"\n';
-                            } else {
-                                output += '"' + relativeUrl + '", \n';
-                            }
+
+                            output += '"' + relativeUrl + '"' + commaNewLine;
                             alreadyLoaded.push(fileName);
                         }
                     }
+                } else {
+                    grunt.log.error('Glob expression '+ globExp +' did not match any files!');
                 }
             });
+            output = output.slice(0, output.length - commaNewLine.length);    // removing the trailing ,
             if (data.steps[Number(step) + 1]) {
                 if (loadedBefore < alreadyLoaded.length) {
                     loadedBefore = alreadyLoaded.length;    //saving how many scripts were loaded after last iteration
