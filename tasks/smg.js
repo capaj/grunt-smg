@@ -34,10 +34,14 @@ module.exports = function (grunt) {
                     var fileName;
                     while(fileName = files.pop()){
                         if (alreadyLoaded.indexOf(fileName) === -1) {   //ignore it if it is already been loaded
+                            var relativeUrl = fileName;
+                            if (data.relativeTo) {
+                                relativeUrl = relativeUrl.substring(data.relativeTo.length);
+                            }
                             if (files.length == 0) {
-                                output += '"' + fileName + '"\n';
+                                output += '"' + relativeUrl + '"\n';
                             } else {
-                                output += '"' + fileName + '", \n';
+                                output += '"' + relativeUrl + '", \n';
                             }
                             alreadyLoaded.push(fileName);
                         }

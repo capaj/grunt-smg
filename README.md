@@ -25,13 +25,18 @@ In your project's Gruntfile, add a section named `smg` to the data object passed
 ```js
 grunt.initConfig({
   smg: {
-       steps: {
+       steps: {     // each step will get transformed in it's own $script call
            1: ['public/**/*.js'],
            2: ['public/**/*.js'],
            3: ['public/**/*.js']
        },
+       relativeTo: 'test/public',  // this path will be omitted from all url paths,
        dest: 'public/modules-definitions.js'
     },
 })
+```
+
+```js
+steps
 ```
 
