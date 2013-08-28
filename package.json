@@ -1,6 +1,6 @@
 {
     "name": "grunt-smg",
-    "description": "Plugin for generating $script manifests",
+    "description": "Plugin for generating $script manifest files which provides easier file management for bigger web apps",
     "version": "0.1.0",
     "homepage": "https://github.com/capaj/grunt-smg",
     "author": {

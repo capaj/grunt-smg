@@ -10,8 +10,6 @@
 module.exports = function (grunt) {
     var path = require('path');
     var glob = require("glob");
-    // Please see the Grunt documentation for more information regarding task
-    // creation: http://gruntjs.com/creating-tasks
 
     grunt.registerMultiTask('smg', 'Plugin for generating $script manifests', function () {
         var data = this.data;
