@@ -1,6 +1,5 @@
 /*
  * grunt-smg
- * https://github.com/Jiří/smg
  *
  * Copyright (c) 2013 Jiri Spac
  * Licensed under the MIT license.
