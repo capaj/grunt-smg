@@ -15,36 +15,50 @@ module.exports = function (grunt) {
 
     grunt.registerMultiTask('smg', 'Plugin for generating $script manifests', function () {
         var data = this.data;
-        var output = '$script([';   //beginning
-        var counter = 0;
-        grunt.log.writeln(JSON.stringify(data));
-
+        var loadedBefore = 0;   //how many scripts were loaded in previous iteration
+        var alreadyLoaded = [];
+        var betweenSteps = '], function() { $script([';
+        var output;
+        var endingBracketsCounter = 0;
+        if (data.steps) {
+            output = '$script([';   //beginning
+        }
         for(var step in data.steps){
-            grunt.log.writeln('Processing step '+ step +': ');
-            var forGlob = data.steps[step];
-            grunt.log.writeln(JSON.stringify(forGlob));
+            grunt.log.writeln('Processing step '+ step +', files: ');
+            var stepGlobs = data.steps[step];
 
-            forGlob.forEach(function (globExp) {
-                glob(globExp, function (er, files) {
-                    grunt.log.writeln(JSON.stringify(files));
-
+            stepGlobs.forEach(function (globExp) {
+                var files = glob.sync(globExp);
+                grunt.log.writeln(JSON.stringify(files));
+                if (files) {
                     var fileName;
                     while(fileName = files.pop()){
-                        output += fileName + ',';
+                        if (alreadyLoaded.indexOf(fileName) === -1) {   //ignore it if it is already been loaded
+                            if (files.length == 0) {
+                                output += '"' + fileName + '"\n';
+                            } else {
+                                output += '"' + fileName + '", \n';
+                            }
+                            alreadyLoaded.push(fileName);
+                        }
                     }
-                });
+                }
             });
             if (data.steps[Number(step) + 1]) {
-                output += '], function() { $script([';
-                counter += 1;
-            } else {    //when the last should run
+                if (loadedBefore < alreadyLoaded.length) {
+                    loadedBefore = alreadyLoaded.length;    //saving how many scripts were loaded after last iteration
+                    output += betweenSteps;
+                    endingBracketsCounter += 1;
+                }
+            } else {    //when the last loading step ends, scriptManifestReady will be flagged
+                if (loadedBefore == alreadyLoaded.length) {
+                    output = output.substring(0, output.length - betweenSteps.length);
+                    endingBracketsCounter -= 1;
+                }
                 output += '], "scriptManifestReady");';
             }
         }
-        if (counter == 0) {
-            output += '], "scriptManifestReady");';
-        }
-        while(counter--){
+        while(endingBracketsCounter--){
             output += '});';
         }
         var dest = data.dest || 'scriptManifest.js';

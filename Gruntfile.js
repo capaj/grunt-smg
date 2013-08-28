@@ -32,9 +32,9 @@ module.exports = function (grunt) {
         smg: {
             test:{
                 steps: {
-                    1: ['test/public/*.js'],
-                    2: ['test/public/*.js'],
-                    3: ['test/public/*.js']
+                    1: ['test/public/1.*'],
+                    2: ['test/public/2.*'],
+                    3: ['test/public/3.*']
                 },
                 dest: 'test/public/modules-definitions.js'
             }
