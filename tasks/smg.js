@@ -17,6 +17,7 @@ module.exports = function (grunt) {
         var data = this.data;
         var loadedBefore = 0;   //how many scripts were loaded in previous iteration
         var alreadyLoaded = [];
+        var readyString = data.readyStr || 'scriptManifestReady';
         var betweenSteps = '], function() { $script([';
         var output;
         var endingBracketsCounter = 0;
@@ -59,7 +60,7 @@ module.exports = function (grunt) {
                     output = output.substring(0, output.length - betweenSteps.length);
                     endingBracketsCounter -= 1;
                 }
-                output += '], "scriptManifestReady");';
+                output += '], "' + readyString + '");';
             }
         }
         while(endingBracketsCounter--){

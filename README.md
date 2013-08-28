@@ -30,6 +30,7 @@ grunt.initConfig({
            2: ['public/**/*.js'],
            3: ['public/**/*.js']
        },
+       readyStr: 'scriptsReady',  // this string will be used as second param for $script call
        relativeTo: 'test/public',  // this path will be omitted from all url paths,
        dest: 'public/modules-definitions.js'
     },
