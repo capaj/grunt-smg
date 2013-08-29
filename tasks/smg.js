@@ -15,10 +15,8 @@ module.exports = function (grunt) {
         var loadedBefore = 0;   //how many scripts were loaded in previous iteration
         var alreadyLoaded = [];
         var readyString = data.readyStr || 'scriptManifestReady';
-        var betweenSteps = '], function() { $script([';
         var commaNewLine = ', \n';
         var output;
-        var endingBracketsCounter = 0;
         if (data.steps) {
             output = '$script([';   //beginning
         }
@@ -45,23 +43,26 @@ module.exports = function (grunt) {
             }
 
             output = output.slice(0, output.length - commaNewLine.length);    // removing the trailing ,
-            if (data.steps[Number(step) + 1]) {
+            if (data.steps[Number(step) + 1]) { //is last
                 if (loadedBefore < alreadyLoaded.length) {
                     loadedBefore = alreadyLoaded.length;    //saving how many scripts were loaded after last iteration
-                    output += betweenSteps;
-                    endingBracketsCounter += 1;
+                    //nsC = next step ceremony
+                    var nsC2ndHalf = '\n $script.ready("' + step + '", function(){ $script([';
+                    if (!nsC) {
+                        nsC = '], "' + step + '"); ' + nsC2ndHalf;  //first time
+                    } else {
+                        var nsC = '], "' + step + '");}); ' + nsC2ndHalf;   //all other than first iterations
+                    }
+                    output += nsC;
                 }
             } else {    //when the last loading step ends, scriptManifestReady will be flagged
                 if (loadedBefore == alreadyLoaded.length) {
-                    output = output.substring(0, output.length - betweenSteps.length);
-                    endingBracketsCounter -= 1;
+                    output = output.substring(0, output.length - nsC.length);
                 }
-                output += '], "' + readyString + '");';
+                output += '], "' + readyString + '");});';
             }
         }
-        while(endingBracketsCounter--){
-            output += '});';
-        }
+
         var dest = data.dest || 'scriptManifest.js';
         grunt.file.write(dest, output);
         grunt.log.writeln('Script manifest has been written.');
