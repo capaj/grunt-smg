@@ -9,7 +9,6 @@
 
 module.exports = function (grunt) {
     var path = require('path');
-    var glob = require("glob");
 
     grunt.registerMultiTask('smg', 'Plugin for generating $script manifests', function () {
         var data = this.data;
@@ -26,27 +25,25 @@ module.exports = function (grunt) {
         for(var step in data.steps){
             grunt.log.writeln('Processing step '+ step +', files: ');
             var stepGlobs = data.steps[step];
-
-            stepGlobs.forEach(function (globExp) {
-                var files = glob.sync(globExp);
-                if (files && files.length > 0) {
-                    grunt.log.writeln(JSON.stringify(files));
-                    var fileName;
-                    while(fileName = files.pop()){
-                        if (alreadyLoaded.indexOf(fileName) === -1) {   //ignore it if it is already been loaded
-                            var relativeUrl = fileName;
-                            if (data.relativeTo) {
-                                relativeUrl = relativeUrl.substring(data.relativeTo.length);
-                            }
-
-                            output += '"' + relativeUrl + '"' + commaNewLine;
-                            alreadyLoaded.push(fileName);
+            var files = grunt.file.expand(stepGlobs);
+            if (files && files.length > 0) {
+                grunt.log.writeln(JSON.stringify(files));
+                var fileName;
+                while(fileName = files.pop()){
+                    if (alreadyLoaded.indexOf(fileName) === -1) {   //ignore it if it is already been loaded
+                        var relativeUrl = fileName;
+                        if (data.relativeTo) {
+                            relativeUrl = relativeUrl.substring(data.relativeTo.length);
                         }
+
+                        output += '"' + relativeUrl + '"' + commaNewLine;
+                        alreadyLoaded.push(fileName);
                     }
-                } else {
-                    grunt.log.error('Glob expression '+ globExp +' did not match any files!');
                 }
-            });
+            } else {
+                grunt.log.error('Glob expression/s '+ JSON.stringify(stepGlobs) +' did not match any files!');
+            }
+
             output = output.slice(0, output.length - commaNewLine.length);    // removing the trailing ,
             if (data.steps[Number(step) + 1]) {
                 if (loadedBefore < alreadyLoaded.length) {

@@ -1,7 +1,7 @@
 {
     "name": "grunt-smg",
     "description": "Plugin for generating $script manifest files which provides easier file management for bigger web apps",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "homepage": "https://github.com/capaj/grunt-smg",
     "author": {
         "name": "Jiri Spac",
@@ -26,9 +26,6 @@
     },
     "scripts": {
         "test": "grunt test"
-    },
-    "dependencies": {
-        "glob": "latest"
     },
     "devDependencies": {
         "grunt-contrib-jshint": "~0.6.0",
