@@ -2,6 +2,66 @@
 
 > Plugin for generating $script manifests
 
+Have you ever written script like this by hand?
+```js
+$script([
+    "/js/routes.js",
+    "/bower_components/jquery/jquery.js",
+    "/bower_components/angular-latest/lib/jquery/jquery.js"
+], "1");
+$script.ready("1", function () {
+    $script([
+        "/bower_components/bootstrap/js/transition.js",
+        "/bower_components/bootstrap/js/tooltip.js",
+        "/bower_components/bootstrap/js/tab.js",
+        "/bower_components/bootstrap/js/scrollspy.js",
+        "/bower_components/bootstrap/js/popover.js",
+        "/bower_components/bootstrap/js/modal.js",
+        "/bower_components/bootstrap/js/dropdown.js",
+        "/bower_components/bootstrap/js/collapse.js",
+        "/bower_components/bootstrap/js/carousel.js",
+        "/bower_components/bootstrap/js/button.js",
+        "/bower_components/bootstrap/js/alert.js",
+        "/bower_components/bootstrap/js/affix.js",
+        "/js/angular/angular.min.js"
+    ], "2");
+});
+$script.ready("2", function () {
+    $script(["/js/services/github.js",
+        "/js/controllers/repos-ctrl.js",
+        "/js/controllers/pulls-ctrl.js",
+        "/js/controllers/main-ctrl.js",
+        "/js/controllers/log-in-ctrl.js",
+        "/js/controllers/issues-ctrl.js",
+        "/js/angular/angular-route.min.js",
+        "/js/main-dev.js",
+        "/js/app.js"
+    ], "scriptManifestReady");
+});
+```
+Well this will generate it for you from much more concise notation using nice glob expressions:
+```js
+ smg: {
+    main:{
+        steps: {
+            1: [
+                '**/jquery/jquery.js',
+                '**/routes.js'
+            ],
+            2: ['public/js/**/angular.min.js', '**/bootstrap/js/*.js'],
+            3: [
+                'public/js/*.js',
+                '**/angular-route.min.js',
+                '**/js/controllers/*.js',
+                '**/js/services/*.js'
+            ]
+        },
+        relativeTo: 'public',
+        dest: 'public/scriptManifest.js'
+    }
+}
+```
+
 ## Getting Started
 This plugin requires Grunt `~0.4.1`
 
