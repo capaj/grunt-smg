@@ -37,7 +37,7 @@ module.exports = function (grunt) {
                     3: ['test/public/3.*']
                 },
                 relativeTo: 'test/public',  // this path will be omitted from all url paths,
-                dest: 'test/public/modules-definitions.js'
+                dest: 'test/public/myScriptManifest.js'
             }
         },
 

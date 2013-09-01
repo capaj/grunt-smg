@@ -8,9 +8,9 @@
 'use strict';
 
 module.exports = function (grunt) {
-    var path = require('path');
 
     grunt.registerMultiTask('smg', 'Plugin for generating $script manifests', function () {
+        var target = this.target;
         var data = this.data;
         var loadedBefore = 0;   //how many scripts were loaded in previous iteration
         var alreadyLoaded = [];
@@ -21,7 +21,8 @@ module.exports = function (grunt) {
             output = '$script([';   //beginning
         }
         for(var step in data.steps){
-            grunt.log.writeln('Processing step '+ step +', files: ');
+            var target_step = target + step;    // to allow multiple targets being used at once without collisions, we add target
+            grunt.log.writeln('Processing step '+ step +' for target ' + target + ', files: ');
             var stepGlobs = data.steps[step];
             var files = grunt.file.expand(stepGlobs);
             if (files && files.length > 0) {
@@ -47,11 +48,11 @@ module.exports = function (grunt) {
                 if (loadedBefore < alreadyLoaded.length) {
                     loadedBefore = alreadyLoaded.length;    //saving how many scripts were loaded after last iteration
                     //nsC = next step ceremony
-                    var nsC2ndHalf = '\n $script.ready("' + step + '", function(){ $script([';
+                    var nsC2ndHalf = '\n $script.ready("' + target_step + '", function(){ $script([';
                     if (!nsC) {
-                        nsC = '], "' + step + '"); ' + nsC2ndHalf;  //first time
+                        nsC = '], "' + target_step + '"); ' + nsC2ndHalf;  //first time
                     } else {
-                        var nsC = '], "' + step + '");}); ' + nsC2ndHalf;   //all other than first iterations
+                        var nsC = '], "' + target_step + '");}); ' + nsC2ndHalf;   //all other than first iterations
                     }
                     output += nsC;
                 }
@@ -65,7 +66,7 @@ module.exports = function (grunt) {
 
         var dest = data.dest || 'scriptManifest.js';
         grunt.file.write(dest, output);
-        grunt.log.writeln('Script manifest has been written.');
+        grunt.log.writeln('Script manifest ' + dest + ' has been written.');
     });
 
 };
