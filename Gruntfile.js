@@ -32,9 +32,10 @@ module.exports = function (grunt) {
         smg: {
             test:{
                 steps: {
-                    1: ['test/public/1.*'],
-                    2: ['test/public/2.*'],
-                    3: ['test/public/3.*']
+                    '@1': ['test/literal_url.js'],
+                    2: ['test/public/1.*'],
+                    3: ['test/public/2.*'],
+                    4: ['test/public/3.*']
                 },
                 relativeTo: 'test/public',  // this path will be omitted from all url paths,
                 dest: 'test/public/myScriptManifest.js'

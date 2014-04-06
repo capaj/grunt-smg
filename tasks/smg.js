@@ -15,36 +15,69 @@ module.exports = function (grunt) {
         var loadedBefore = 0;   //how many scripts were loaded in previous iteration
         var alreadyLoaded = [];
         var readyString = data.readyStr || 'scriptManifestReady';
+        var literalSteps = [];
         var commaNewLine = ', \n';
         var output;
+        var steps = {};
+
         if (data.steps) {
             output = '$script([';   //beginning
+
+            for(var step in data.steps) {
+                if (step[0] === '@') {
+                    var literalStep = step.substr(1);
+                    steps[literalStep] = data.steps[step];
+                    literalSteps.push(literalStep);
+                } else {
+                    steps[step] = data.steps[step];
+                }
+            }
         }
-        for(var step in data.steps){
+
+        /**
+         * @param {String} fileName
+         * @param {Boolean} relative
+         */
+        var pushIntoOutput = function (fileName, relative) {
+            if (alreadyLoaded.indexOf(fileName) === -1) {   //ignore it if it is already been loaded
+                if (relative && data.relativeTo) {
+                    var relativeUrl = fileName;
+                    relativeUrl = relativeUrl.substring(data.relativeTo.length);
+                    output += '"' + relativeUrl + '"' + commaNewLine;
+
+                } else {
+                    output += '"' + fileName + '"' + commaNewLine;
+                }
+
+                alreadyLoaded.push(fileName);
+            }
+        };
+
+        for(var step in steps){
             var target_step = target + step;    // to allow multiple targets being used at once without collisions, we add target
             grunt.log.writeln('Processing step '+ step +' for target ' + target + ', files: ');
-            var stepGlobs = data.steps[step];
-            var files = grunt.file.expand(stepGlobs);
-            if (files && files.length > 0) {
-                grunt.log.writeln(JSON.stringify(files));
-                var fileName;
-                while(fileName = files.pop()){
-                    if (alreadyLoaded.indexOf(fileName) === -1) {   //ignore it if it is already been loaded
-                        var relativeUrl = fileName;
-                        if (data.relativeTo) {
-                            relativeUrl = relativeUrl.substring(data.relativeTo.length);
-                        }
+            var stepGlobs = steps[step];
+            var fileName;
 
-                        output += '"' + relativeUrl + '"' + commaNewLine;
-                        alreadyLoaded.push(fileName);
-                    }
+            if (literalSteps.indexOf(step) !== -1) {
+                while(fileName = stepGlobs.pop()){
+                    pushIntoOutput(fileName);
                 }
             } else {
-                grunt.log.error('Glob expression/s '+ JSON.stringify(stepGlobs) +' did not match any files!');
+                var files = grunt.file.expand(stepGlobs);
+                if (files && files.length > 0) {
+                    grunt.log.writeln(JSON.stringify(files));
+                    while(fileName = files.pop()){
+                        pushIntoOutput(fileName, true);
+                    }
+                } else {
+                    grunt.log.error('Glob expression/s '+ JSON.stringify(stepGlobs) +' did not match any files!');
+                }
             }
 
+
             output = output.slice(0, output.length - commaNewLine.length);    // removing the trailing ,
-            if (data.steps[Number(step) + 1]) { //is last
+            if (steps[Number(step) + 1] || steps['@' + (Number(step) + 1)]) { //is last
                 if (loadedBefore < alreadyLoaded.length) {
                     loadedBefore = alreadyLoaded.length;    //saving how many scripts were loaded after last iteration
                     //nsC = next step ceremony
