@@ -57,9 +57,22 @@ Well this will generate it for you from much more concise notation using nice gl
             ]
         },
         relativeTo: 'public',
-        dest: 'public/scriptManifest.js'
+        dest: 'public/scriptLoader.js'
     }
-}
+ }
+```
+
+instead of providing an object, you can put your steps in a separate node module file and put relative path to the module file as a value for ```steps``` property.
+Like this:
+
+```js
+ smg: {
+    main:{
+        steps: '/test/scriptManifest.js',
+        relativeTo: 'public',
+        dest: 'public/scriptLoader.js'
+    }
+ }
 ```
 
 ## Getting Started

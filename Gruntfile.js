@@ -30,7 +30,7 @@ module.exports = function (grunt) {
 
         // Configuration to be run (and then tested).
         smg: {
-            test:{
+            testInline:{
                 steps: {
                     '@1': ['test/literal_url.js'],
                     2: ['test/public/1.*'],
@@ -38,7 +38,12 @@ module.exports = function (grunt) {
                     4: ['test/public/3.*']
                 },
                 relativeTo: 'test/public',  // this path will be omitted from all url paths,
-                dest: 'test/public/myScriptManifest.js'
+                dest: 'test/public/scriptLoaderInline.js'
+            },
+            testInFile: {
+                steps: '/test/scriptManifest.js',
+                relativeTo: 'test/public',  // this path will be omitted from all url paths,
+                dest: 'test/public/scriptLoaderFile.js'
             }
         },
 

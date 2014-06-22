@@ -21,6 +21,12 @@ module.exports = function (grunt) {
         var steps = {};
 
         if (data.steps) {
+
+            if (typeof data.steps === 'string') {
+                var path = process.cwd() + '/' + data.steps;
+                grunt.log.writeln('Loading a module with smg steps from: ' + path);
+                data.steps = require(path);
+            }
             output = '$script([';   //beginning
 
             for(var step in data.steps) {
