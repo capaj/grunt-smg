@@ -1,6 +1,7 @@
 # grunt-smg
-
 > Plugin for generating $script manifests
+
+Deprecated. I have used this for loading my script files before I knew [jspm](http://jspm.io/)/[systemjs](https://github.com/systemjs/systemjs). So if you are considering using this, think again and try rather systemjs. I should probably delete this repo, but I will leave it just as a showcase of my misstep on searching for frontend JS dependency management.
 
 Have you ever written script like this by hand?
 ```js
